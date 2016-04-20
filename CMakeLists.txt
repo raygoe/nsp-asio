@@ -11,10 +11,6 @@ macro(get_WIN32_WINNT version)
         set(${version} "0x${ver}")
     endif()
 endmacro()
-
-get_WIN32_WINNT(ver)
-add_definitions(-D_WIN32_WINNT=${ver})
-
 # Local CMake Modules
 set ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules" )
 
@@ -37,6 +33,9 @@ if ( NOT WIN32 )
     
     set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3" )  # Optimize
 else ( )
+    get_WIN32_WINNT(ver)
+    add_definitions(-D_WIN32_WINNT=${ver})
+
     if ( MINGW )
         check_cxx_compiler_flag ( "-std=c++11" COMPILER_SUPPORTS_CXX11 )
         check_cxx_compiler_flag ( "-std=c++0x" COMPILER_SUPPORTS_CXX0X )

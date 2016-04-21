@@ -59,5 +59,6 @@ add_definitions(-DASIO_STANDALONE)
 
 include_directories ( "${PROJECT_SOURCE_DIR}/shared" )
 
+add_subdirectory ( shared )
 add_subdirectory ( client )
 add_subdirectory ( server )

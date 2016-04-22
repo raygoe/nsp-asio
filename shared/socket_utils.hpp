@@ -9,13 +9,13 @@ class SocketUtils
 {
 public:
 
-	static bool net_is_little_endian ( const connection_handshake& hs );
+	static bool NetCheckLittleEndian ( const connection_handshake& hs );
 
 	template <typename T>
-	static T flipEndian ( T data, size_t length = 0 );
+	static T FlipEndian ( T data, size_t length = 0 );
 
 	template <typename T>
-	static void flipEndian ( T* data, size_t length = 0 );
+	static void FlipEndian ( T* data, size_t length = 0 );
 
 	static uint8_t CheckOpcode ( uint8_t service_tag );
 
@@ -25,7 +25,7 @@ public:
 
 
 template <typename T>
-T SocketUtils::flipEndian ( T data, size_t length ) {
+T SocketUtils::FlipEndian ( T data, size_t length ) {
 	if (length) {
 		std::reverse(reinterpret_cast<char*>(&data), reinterpret_cast<char*>(&data) + length);
 	} else {
@@ -36,7 +36,7 @@ T SocketUtils::flipEndian ( T data, size_t length ) {
 }
 
 template <typename T>
-void SocketUtils::flipEndian ( T* data, size_t length ) {
+void SocketUtils::FlipEndian ( T* data, size_t length ) {
 	if (length) {
 		std::reverse(reinterpret_cast<char*>(data), reinterpret_cast<char*>(data) + length);
 	} else {

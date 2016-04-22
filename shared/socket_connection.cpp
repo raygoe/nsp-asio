@@ -3,11 +3,11 @@
 #include <socket_utils.hpp>
 
 Connection::Connection ( asio::io_service& io ) : sock(io),
-		in_data(), out_data(), nextLen(0), connected(0), ready(0)
+		in_data(), out_data(), nextLen(0), connected(0), ready(0), service_handlers()
 {
 }
 
-void Connection::tick ( ) {
+void Connection::Tick ( ) {
     // Check for outstanding writes.
     if (connected)
     {
@@ -21,12 +21,28 @@ void Connection::tick ( ) {
     }
 }
 
-void Connection::send ( Packet & packet ) {
+void Connection::Send ( Packet & packet ) {
 	out_data << packet;
+}
+
+void Connection::RegisterService ( uint8_t service_tag, ServiceHandler::Pointer handler ) {
+	service_handlers[service_tag] = handler;
+}
+
+void Connection::RemoveService ( uint8_t service_tag ) {
+	service_handlers.erase(service_tag);
 }
 
 void Connection::handle_write ( const asio::error_code& error ) {
 
+}
+
+void Connection::parse_packet ( )
+{
+	uint8_t service = recv_packet.Header().service_tag;
+	if (service_handlers.count(service)) {
+		service_handlers[service]->HandlePacket(shared_from_derived(), recv_packet);
+	}
 }
 
 void Connection::handle_read_handshake ( const asio::error_code& error, size_t bytes ) {
@@ -36,7 +52,7 @@ void Connection::handle_read_handshake ( const asio::error_code& error, size_t b
 
         connection_handshake cs;
         in_data >> cs;
-        SocketUtils::isLittleEndian = SocketUtils::net_is_little_endian(cs);
+        SocketUtils::isLittleEndian = SocketUtils::NetCheckLittleEndian(cs);
         ready = true;
 
         receive_next_packet();
@@ -51,10 +67,10 @@ void Connection::handle_read_header ( const asio::error_code& error, size_t byte
 
         in_data >> recv_packet;
 
-        if (!headerIsGood(recv_packet.header()))
+        if (!headerIsGood(recv_packet.Header()))
             sock.close(); //uhhh...
 
-        nextLen = recv_packet.header().packet_size - sizeof(socket_header);
+        nextLen = recv_packet.Header().packet_size - sizeof(socket_header);
 
         receive_next_packet();
     }

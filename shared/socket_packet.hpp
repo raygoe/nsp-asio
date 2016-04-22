@@ -15,7 +15,7 @@ public:
 	friend ByteStream& operator<<(ByteStream& bs, Packet& pkt);
 	friend ByteStream& operator>>(ByteStream& bs, Packet& pkt);
 
-	socket_header & header() { return header_; }
+	socket_header & Header() { return header_; }
 private:
 	socket_header header_;
 };

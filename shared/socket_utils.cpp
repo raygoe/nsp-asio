@@ -2,7 +2,7 @@
 
 bool SocketUtils::isLittleEndian = true;
 
-bool SocketUtils::net_is_little_endian ( const connection_handshake& hs ) {
+bool SocketUtils::NetCheckLittleEndian ( const connection_handshake& hs ) {
 	return (*reinterpret_cast<const char*>(&hs) == 0x33);
 }
 

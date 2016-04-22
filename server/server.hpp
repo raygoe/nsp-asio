@@ -20,21 +20,20 @@ public:
 
     typedef std::vector<ServerConnection*> connection_list;
 
-	typedef std::shared_ptr<ServerConnection> pointer;
-	static pointer Create ( asio::io_service& io, connection_list * list ) {
-		return pointer(new ServerConnection(io, list));
+	typedef std::shared_ptr<ServerConnection> Pointer;
+
+	static ServerConnection::Pointer Create ( asio::io_service& io, connection_list * list ) {
+		return ServerConnection::Pointer(new ServerConnection(io, list));
 	}
 
 	void start ( );
 
-    virtual void tick ( );
+    virtual void Tick ( );
     
-    void generate_echo_request ( const std::string & msg );
-    
-    void generate_echo_response ( const std::string & msg );
+    void GenerateEchoRequest ( const std::string & msg );
     
 protected:
-    std::shared_ptr<Connection> shared_from_derived ( ) {
+    Connection::Pointer shared_from_derived ( ) {
     	return std::static_pointer_cast<Connection>(shared_from_this());
     }
 
@@ -45,8 +44,6 @@ private:
     void handle_resolve ( const asio::error_code& error, asio::ip::tcp::resolver::iterator ep );
 
     void handle_connect ( const asio::error_code& error, asio::ip::tcp::resolver::iterator ep );
-    
-    virtual void parse_packet ( );
 
     connection_list * list;
 };
@@ -69,7 +66,7 @@ public:
 private:
     void start_accept ();
     
-    void handle_accept (ServerConnection::pointer new_connection, const asio::error_code& error);
+    void handle_accept (ServerConnection::Pointer new_connection, const asio::error_code& error);
 
     asio::ip::tcp::acceptor acceptor;
     connection_list clients;

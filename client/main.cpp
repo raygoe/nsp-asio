@@ -38,17 +38,17 @@ void do_test_bs ()
 int main(int argc, char** argv) {
 	try {
         asio::io_service io;
-        ClientConnection::pointer client = ClientConnection::Create(io);
+        ClientConnection::Pointer client = ClientConnection::Create(io);
         client->Connect(argv[1], argv[2]);
         
         while (true) {
             io.poll();
             
             if (client->isConnected()) {
-                client->tick();
+                client->Tick();
                 
                 if (client->isReady()) {
-                    client->generate_echo_request ( std::string("This is from the client.") );
+                    client->GenerateEchoRequest ( std::string("This is from the client.") );
                 }
             }
             

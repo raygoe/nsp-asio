@@ -19,9 +19,9 @@ ByteStream& operator>>(ByteStream& bs, Packet& pkt) {
 	pkt >> pkt.header_;
 
 	if (!SocketUtils::isLittleEndian) {
-		SocketUtils::flipEndian(&pkt.header_.service_tag);
-		SocketUtils::flipEndian(&pkt.header_.opcode);
-		SocketUtils::flipEndian(&pkt.header_.packet_size);
+		SocketUtils::FlipEndian(&pkt.header_.service_tag);
+		SocketUtils::FlipEndian(&pkt.header_.opcode);
+		SocketUtils::FlipEndian(&pkt.header_.packet_size);
 	}
 
 	return bs;

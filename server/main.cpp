@@ -17,10 +17,10 @@ int main(int argc, char** argv) {
             io.poll();
             
             for ( auto* conn : *server.getConnectedClients() ) {
-                conn->tick();
+                conn->Tick();
                 
                 if (conn->isConnected() && conn->isReady()) {
-                    conn->generate_echo_request ( std::string("This is from the server!") );
+                    conn->GenerateEchoRequest ( std::string("This is from the server!") );
                 }
             }
 

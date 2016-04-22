@@ -14,7 +14,7 @@ ByteStream& operator>>(ByteStream& bs, CharEcho& ce)
 	bs >> ce.ed;
 
 	if (!SocketUtils::isLittleEndian) {
-		SocketUtils::flipEndian(&ce.ed.string_length);
+		SocketUtils::FlipEndian(&ce.ed.string_length);
 	}
 
 	bytebuffer bb(ce.ed.string_length);

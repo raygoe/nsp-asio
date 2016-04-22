@@ -5,6 +5,9 @@
 #include <bytestream.hpp>
 #include <socket_packet.hpp>
 #include <socket_types.hpp>
+#include <socket_service.hpp>
+
+#include <map>
 
 #include <memory>
 
@@ -13,17 +16,23 @@
 class Connection
 {
 public:
-	virtual ~Connection() {}
+	typedef std::shared_ptr<Connection> Pointer;
 
-    virtual void tick ( );
+	virtual ~Connection() { service_handlers.clear(); }
+
+    virtual void Tick ( );
 
     bool isReady () { return ready; }
 
     bool isConnected() { return connected; }
 
-    void send ( Packet & packet );
+    void Send ( Packet & packet );
 
-    asio::ip::tcp::socket& socket ( ) { return sock; }
+    asio::ip::tcp::socket& Socket ( ) { return sock; }
+
+    void RegisterService ( uint8_t service_tag, ServiceHandler::Pointer handler );
+
+    void RemoveService ( uint8_t service_tag );
 
 protected:
 
@@ -43,7 +52,7 @@ protected:
 
     void receive_next_packet ( );
 
-    virtual void parse_packet ( ) { }
+    void parse_packet ( );
 
     virtual std::shared_ptr<Connection> shared_from_derived () = 0;
 
@@ -58,6 +67,7 @@ protected:
     bool ready = false;
     std::vector<char> send_buffer;
     char recv_buffer[MAX_PKT_LEN];
+    std::map<uint8_t, ServiceHandler::Pointer> service_handlers;
 
 };
 

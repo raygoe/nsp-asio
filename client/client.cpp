@@ -8,17 +8,14 @@
 
 #include <socket_utils.hpp>
 
-static int pktcount = 0;
+#include <services/echo_service.hpp>
 
-static uint64_t GetTimeStamp() {
-    std::chrono::time_point<std::chrono::system_clock> t;
-    t = std::chrono::system_clock::now();
-    return std::chrono::duration_cast<std::chrono::microseconds>(t.time_since_epoch()).count();
-}
+static int pktcount = 0;
 
 ClientConnection::ClientConnection ( asio::io_service& io )
 	: Connection(io), resolver(io)
 {
+	RegisterService(ServiceTags::Char, EchoService::Create());
 }
 
 void ClientConnection::Connect ( const std::string & server, const std::string & port )
@@ -29,42 +26,14 @@ void ClientConnection::Connect ( const std::string & server, const std::string &
                 std::placeholders::_1, std::placeholders::_2));
 }
 
-void ClientConnection::tick ( )
+void ClientConnection::Tick ( )
 {
-	Connection::tick ();
+	Connection::Tick ();
 }
 
-void ClientConnection::parse_packet ( )
+void ClientConnection::GenerateEchoRequest ( const std::string & msg )
 {
-    switch (recv_packet.header().service_tag) {
-        case 0:
-        {
-            CharEcho op;
-            recv_packet >> op;
-
-            switch (recv_packet.header().opcode) {
-                case 0:
-                {
-                    // Echo this
-                    generate_echo_response ( op.str() );
-                }
-                break;
-                case 1:
-                {
-                    // Got an Echo
-                    std::cout << "[" << GetTimeStamp() << "] Got Message: " << op.str() << std::endl;
-                }
-                break;
-            
-            };
-        }
-        break;
-    };
-}
-
-void ClientConnection::generate_echo_request ( const std::string & msg )
-{
-    Packet packet(0, 0);
+    Packet packet(ServiceTags::Char, CharOpcodes::Request);
                         
     std::stringstream sstr;
     sstr << msg << " #" << pktcount;
@@ -74,16 +43,7 @@ void ClientConnection::generate_echo_request ( const std::string & msg )
     CharEcho echo(newmsg);
     packet << echo;
     
-    send ( packet );
-}
-
-void ClientConnection::generate_echo_response ( const std::string & msg )
-{
-    Packet packet(0, 1);
-    CharEcho echo(msg);
-    packet << echo;
-
-    send ( packet );
+    Send ( packet );
 }
 
 void ClientConnection::handle_resolve ( const asio::error_code& error, tcp::resolver::iterator ep )

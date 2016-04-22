@@ -8,28 +8,28 @@
 using namespace std;
 using asio::ip::tcp;
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     try {
         asio::io_service io;
         my_server server(io);
-        
+
         while (true) {
             io.poll();
-            
-            for ( auto* conn : *server.getConnectedClients() ) {
+
+            for (auto * conn : *server.getConnectedClients()) {
                 conn->Tick();
-                
+
                 if (conn->isConnected() && conn->isReady()) {
-                    conn->GenerateEchoRequest ( std::string("This is from the server!") );
+                    conn->GenerateEchoRequest(std::string("This is from the server!"));
                 }
             }
 
-			std::this_thread::sleep_for(std::chrono::microseconds(15000));
+            std::this_thread::sleep_for(std::chrono::microseconds(15000));
         }
     } catch (std::exception& e) {
         cerr << e.what() << endl;
     }
 
     return 0;
-
 }

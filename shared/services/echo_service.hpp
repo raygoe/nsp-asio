@@ -9,19 +9,19 @@
 class EchoService : public ServiceHandler, public std::enable_shared_from_this<EchoService>
 {
 public:
-	typedef std::shared_ptr<EchoService> Pointer;
+    typedef std::shared_ptr<EchoService> Pointer;
 
-	static ServiceHandler::Pointer Create ( );
+    static ServiceHandler::Pointer Create();
 
-	void HandlePacket(Connection::Pointer conn, Packet& packet);
+    void HandlePacket(Connection::Pointer conn, Packet& packet);
 
-	ServiceHandler::Pointer shared_from_derived () {
-		return std::static_pointer_cast<ServiceHandler>(shared_from_this());
-	}
+    ServiceHandler::Pointer shared_from_derived() {
+        return std::static_pointer_cast<ServiceHandler>(shared_from_this());
+    }
 
 private:
 
-	EchoService ( );
+    EchoService();
 
 };
 

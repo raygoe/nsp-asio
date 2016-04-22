@@ -5,52 +5,51 @@
 
 #include <bytestream.hpp>
 
-struct connection_handshake
-{
+struct connection_handshake {
     uint16_t magic_num;
 };
 
-struct socket_header
-{
+struct socket_header {
     uint16_t packet_size;
     uint8_t service_tag;
     uint8_t opcode;
 };
 
 struct ServiceTags {
-enum uint8_t
-{
-	Char
-};
+    enum uint8_t {
+        Char
+    };
 };
 
-struct char_echo_data
-{
+struct char_echo_data {
     uint64_t string_length;
 };
 
 struct CharOpcodes {
-enum uint8_t
-{
-	Request, Response,
-	EnumCount
-};
+    enum uint8_t {
+        Request, Response,
+        EnumCount
+    };
 };
 
 class CharEcho
 {
 public:
-	CharEcho ( ) { }
-	CharEcho ( std::string msg ) : msg(msg) { ed.string_length = msg.length(); }
+    CharEcho() { }
+    CharEcho(std::string msg) : msg(msg) {
+        ed.string_length = msg.length();
+    }
 
-	friend ByteStream& operator<<(ByteStream& bs, CharEcho& ce);
-	friend ByteStream& operator>>(ByteStream& bs, CharEcho& ce);
+    friend ByteStream& operator<<(ByteStream& bs, CharEcho& ce);
+    friend ByteStream& operator>>(ByteStream& bs, CharEcho& ce);
 
-	std::string str () const { return msg; }
+    std::string str() const {
+        return msg;
+    }
 
 private:
-	char_echo_data ed;
-	std::string msg;
+    char_echo_data ed;
+    std::string msg;
 };
 
 #endif /* SHARED_SOCKET_TYPES_HPP */

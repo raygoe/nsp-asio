@@ -16,47 +16,55 @@
 class Connection
 {
 public:
-	typedef std::shared_ptr<Connection> Pointer;
+    typedef std::shared_ptr<Connection> Pointer;
 
-	virtual ~Connection() { service_handlers.clear(); }
+    virtual ~Connection() {
+        service_handlers.clear();
+    }
 
-    virtual void Tick ( );
+    virtual void Tick();
 
-    bool isReady () { return ready; }
+    bool isReady() {
+        return ready;
+    }
 
-    bool isConnected() { return connected; }
+    bool isConnected() {
+        return connected;
+    }
 
-    void Send ( Packet & packet );
+    void Send(Packet& packet);
 
-    asio::ip::tcp::socket& Socket ( ) { return sock; }
+    asio::ip::tcp::socket& Socket() {
+        return sock;
+    }
 
-    void RegisterService ( uint8_t service_tag, ServiceHandler::Pointer handler );
+    void RegisterService(uint8_t service_tag, ServiceHandler::Pointer handler);
 
-    void RemoveService ( uint8_t service_tag );
+    void RemoveService(uint8_t service_tag);
 
 protected:
 
-	Connection (asio::io_service& io_service);
+    Connection(asio::io_service& io_service);
 
-    void handle_write ( const asio::error_code& error );
+    void handle_write(const asio::error_code& error);
 
-    void handle_read_handshake ( const asio::error_code& error, size_t bytes );
+    void handle_read_handshake(const asio::error_code& error, size_t bytes);
 
-    void handle_read_header ( const asio::error_code& error, size_t bytes );
+    void handle_read_header(const asio::error_code& error, size_t bytes);
 
-    void handle_read_msg ( const asio::error_code& error, size_t bytes );
+    void handle_read_msg(const asio::error_code& error, size_t bytes);
 
-    void send_handshake ( );
+    void send_handshake();
 
-    void receive_handshake ( );
+    void receive_handshake();
 
-    void receive_next_packet ( );
+    void receive_next_packet();
 
-    void parse_packet ( );
+    void parse_packet();
 
-    virtual std::shared_ptr<Connection> shared_from_derived () = 0;
+    virtual std::shared_ptr<Connection> shared_from_derived() = 0;
 
-    bool headerIsGood ( const socket_header & header );
+    bool headerIsGood(const socket_header& header);
 
     asio::ip::tcp::socket sock;
     Packet recv_packet;

@@ -14,6 +14,11 @@ endmacro()
 # Local CMake Modules
 set ( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules" )
 
+option( NSP_BUILD_DOCS "Build the NSP Doxygen documentation" ON)
+if ( NSP_BUILD_DOCS )
+    find_package(Doxygen)
+endif ( )
+
 # Import macros
 include ( CheckCXXCompilerFlag )
 
@@ -62,3 +67,17 @@ include_directories ( "${PROJECT_SOURCE_DIR}/shared" )
 add_subdirectory ( shared )
 add_subdirectory ( client )
 add_subdirectory ( server )
+
+# Docs
+if ( DOXYGEN_FOUND AND NSP_BUILD_DOCS )
+    if ( DOXYGEN_DOT_FOUND )
+        set ( NSP_HAVE_DOT "YES" )
+    else ( )
+        set ( NSP_HAVE_DOT "NO" )
+    endif ( )
+
+    configure_file( "${PROJECT_SOURCE_DIR}/docs/Doxyfile.in"
+                    "${CMAKE_INSTALL_PREFIX}/docs/Doxyfile" )
+
+    add_subdirectory ( docs )
+endif ( )

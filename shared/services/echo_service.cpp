@@ -4,6 +4,11 @@
 
 #include <iostream>
 
+//! This will return the number of microseconds past the linux epoch.
+/*!
+ * The function makes use of C++11's <chrono> headers.
+ * \return uint64_t time stamp (microseconds after linux epoch.)
+ */
 static uint64_t GetTimeStamp()
 {
     std::chrono::time_point<std::chrono::system_clock> t;
@@ -15,6 +20,7 @@ EchoService::EchoService() : ServiceHandler(ServiceTags::Char) { }
 
 ServiceHandler::Pointer EchoService::Create()
 {
+    // Create a shared_ptr for the EchoService
     return std::static_pointer_cast<ServiceHandler>(
                EchoService::Pointer(new EchoService())
            );
@@ -22,6 +28,7 @@ ServiceHandler::Pointer EchoService::Create()
 
 void EchoService::HandlePacket(Connection::Pointer con, Packet& packet)
 {
+    // Pull down the CharEcho Service Tag Structure.
     CharEcho op;
     packet >> op;
 

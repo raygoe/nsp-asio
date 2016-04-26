@@ -1,6 +1,6 @@
 #include <socket_connection.hpp>
-
 #include <socket_utils.hpp>
+#include <functional>
 
 Connection::Connection ( asio::io_service& io ) : sock(io),
 		in_data(), out_data(), nextLen(0), connected(0), ready(0)

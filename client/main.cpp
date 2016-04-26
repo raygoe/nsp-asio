@@ -14,49 +14,34 @@
 using namespace std;
 using asio::ip::tcp;
 
-void do_test_bs ()
+int main(int argc, char** argv)
 {
-	ByteStream data;
-
-	{
-		Packet packet(0, 0);
-		CharEcho echo_a("This is a test."), echo_b("This is another test.");
-		packet << echo_a << echo_b;
-		data << packet;
-	}
-
-	{
-		Packet packet;
-		CharEcho echo_a, echo_b;
-		data >> packet;
-		packet >> echo_a >> echo_b;
-
-		cout << echo_a.str() << endl << echo_b.str() << endl;
-	}
-}
-
-int main(int argc, char** argv) {
-	try {
+    try {
+        // Create the IO service for the client.
         asio::io_service io;
-        ClientConnection::pointer client = ClientConnection::Create(io);
-        client->Connect(argv[1], argv[2]);
-        
+        // Create a Client Connection
+        ClientConnection::Pointer client = ClientConnection::Create(io);
+        client->Connect(argv[1], argv[2]); // Connect to the listed host and port
+
         while (true) {
-            io.poll();
-            
+            io.poll(); // Receive one event.
+
             if (client->isConnected()) {
-                client->tick();
-                
+                // If the client is connected, tick the Client Connection
+                client->Tick();
+
                 if (client->isReady()) {
-                    client->generate_echo_request ( std::string("This is from the client.") );
+                    // If the client has received a handshake, Generate some Echo Requests.
+                    client->GenerateEchoRequest(std::string("This is from the client."));
                 }
             }
-            
-			std::this_thread::sleep_for(std::chrono::microseconds(15000));
+
+            // This emulates about 60 ticks per second.
+            std::this_thread::sleep_for(std::chrono::microseconds(15000));
         }
-        
     } catch (std::exception& e) {
         std::cerr << e.what() << std::endl;
     }
+
     return 0;
 }

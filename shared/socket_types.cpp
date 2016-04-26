@@ -5,21 +5,27 @@
 
 ByteStream& operator<<(ByteStream& bs, CharEcho& ce)
 {
-	bs << ce.ed << ce.msg;
-	return bs;
+    // Push the CharEcho structure onto the byte stream.
+    // Followed by the message.
+    bs << ce.ed << ce.msg;
+    return bs;
 }
 
 ByteStream& operator>>(ByteStream& bs, CharEcho& ce)
 {
-	bs >> ce.ed;
+    // Pull down the EchoData structure.
+    bs >> ce.ed;
 
-	if (!SocketUtils::isLittleEndian) {
-		SocketUtils::flipEndian(&ce.ed.string_length);
-	}
+    // Flip the endians if necessary
+    if (!SocketUtils::isLittleEndian) {
+        SocketUtils::FlipEndian(&ce.ed.string_length);
+    }
 
-	bytebuffer bb(ce.ed.string_length);
-	bs >> bb;
-
-	ce.msg = bb.str();
-	return bs;
+    // Create a byte buffer long enough to hold the msg string.
+    bytebuffer bb(ce.ed.string_length);
+    // Transfer the data to the byte buffer.
+    bs >> bb;
+    // Pull down the byte buffer data as a std::string.
+    ce.msg = bb.str();
+    return bs;
 }
